@@ -1,0 +1,77 @@
+#include <iostream>
+#include <vector>
+
+// Definición de tipos para mayor claridad en la lectura del código
+using Vector = std::vector<double>;
+using Matrix = std::vector<Vector>;
+
+// Función para imprimir una matriz
+void printMatrix(const Matrix &mat) {
+    for (const auto &row : mat) {
+        for (const auto &elem : row) {
+            std::cout << elem << "\t";
+        }
+        std::cout << std::endl;
+    }
+}
+
+// Función para calcular la inversa de una matriz 3x3
+Matrix inverseMatrix(const Matrix &mat) {
+    double det = mat[0][0] * (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) -
+                 mat[0][1] * (mat[1][0] * mat[2][2] - mat[1][2] * mat[2][0]) +
+                 mat[0][2] * (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]);
+
+    if (det == 0) {
+        std::cerr << "La matriz no es inversible (determinante igual a cero)." << std::endl;
+        return Matrix(); // Matriz vacía como indicador de error
+    }
+
+    Matrix invMat(3, Vector(3));
+
+    invMat[0][0] = (mat[1][1] * mat[2][2] - mat[1][2] * mat[2][1]) / det;
+    invMat[0][1] = (mat[0][2] * mat[2][1] - mat[0][1] * mat[2][2]) / det;
+    invMat[0][2] = (mat[0][1] * mat[1][2] - mat[0][2] * mat[1][1]) / det;
+
+    invMat[1][0] = (mat[1][2] * mat[2][0] - mat[1][0] * mat[2][2]) / det;
+    invMat[1][1] = (mat[0][0] * mat[2][2] - mat[0][2] * mat[2][0]) / det;
+    invMat[1][2] = (mat[0][2] * mat[1][0] - mat[0][0] * mat[1][2]) / det;
+
+    invMat[2][0] = (mat[1][0] * mat[2][1] - mat[1][1] * mat[2][0]) / det;
+    invMat[2][1] = (mat[0][1] * mat[2][0] - mat[0][0] * mat[2][1]) / det;
+    invMat[2][2] = (mat[0][0] * mat[1][1] - mat[0][1] * mat[1][0]) / det;
+
+    return invMat;
+}
+
+int main() {
+    double R1, R2, R3, R4, R5, R6;
+
+    std::cout << "Ingrese el valor de la resistencia(R1) entre los nodos A y B: ";
+    std::cin >> R1;
+    std::cout << "Ingrese el valor de la resistencia entre los nodos(R2) B y E: ";
+    std::cin >> R2;
+    std::cout << "Ingrese el valor de la resistencia entre los nodos(R3) E y G: ";
+    std::cin >> R3;
+    std::cout << "Ingrese el valor de la resistencia entre los nodos(R4) B y C: ";
+    std::cin >> R4;
+    std::cout << "Ingrese el valor de la resistencia entre los nodos(R5) E y F: ";
+    std::cin >> R5;
+    std::cout << "Ingrese el valor de la resistencia entre los nodos(R6) F y H: ";
+    std::cin >> R6;
+
+    Matrix matriz_resistencias = {{R1 + R2 + R3, -R2, -R3},
+                                  {-R2, R2 + R4 + R5, -R5},
+                                  {-R3, -R5, R3 + R5 + R6}};
+
+    // Imprimir la matriz de resistencias
+    std::cout << "Matriz de resistencias:" << std::endl;
+    printMatrix(matriz_resistencias);
+
+    Matrix inversa_resistencias = inverseMatrix(matriz_resistencias);
+
+    // Imprimir la matriz inversa de resistencias
+    std::cout << "\nInversa de la matriz de resistencias:" << std::endl;
+    printMatrix(inversa_resistencias);
+
+    return 0;
+}
